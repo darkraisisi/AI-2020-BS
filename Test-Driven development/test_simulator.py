@@ -50,14 +50,21 @@ class TestSimulator(TestCase):
         """
         Test the base rules of game of life.
         """
-        # One cell with no neighbours: should die 'underpopulation'
+        # One cell with no neighbours & life force 1: should die 'underpopulation'
         world = World(3)
         self.sim.set_world(world)
         self.sim.get_world().set(1,1,1)
         self.sim.update()
         self.assertEqual(self.sim.get_world().get(1, 1), 0)
 
-        # One cell with 1 neighbours: should die
+        # One cell with no neighbours & life force 1: should weaken
+        world = World(3)
+        self.sim.set_world(world)
+        self.sim.get_world().set(1,1,2)
+        self.sim.update()
+        self.assertEqual(self.sim.get_world().get(1, 1), 1)
+
+        # One cell with 1 neighbour: should die
         world = World(3)
         self.sim.set_world(world)
         self.sim.get_world().set(1,1,1)
@@ -70,24 +77,24 @@ class TestSimulator(TestCase):
         world = World(3)
         self.sim.set_world(world)
         self.sim.get_world().set(0,1,1)
-        self.sim.get_world().set(1,1,1)
+        self.sim.get_world().set(1,1,3)
         self.sim.get_world().set(2,1,1)
         self.sim.update()
-        self.assertEqual(self.sim.get_world().get(1, 1), 1)
+        self.assertEqual(self.sim.get_world().get(1, 1), 3)
         
-        # One cell with 4 neighbours: Cell should die 'overpopulation'
+        # One cell with 4 neighbours & life force 5: Cell should weaken 'overpopulation'
 
         world = World(3)
         self.sim.set_world(world)
         self.sim.get_world().set(0,0,1)
         self.sim.get_world().set(0,1,1)
-        self.sim.get_world().set(1,1,1)
+        self.sim.get_world().set(1,1,5)
         self.sim.get_world().set(2,1,1)
         self.sim.get_world().set(2,2,1)
         self.sim.update()
-        self.assertEqual(self.sim.get_world().get(1, 1), 0)
+        self.assertEqual(self.sim.get_world().get(1, 1), 4)
 
-        # One dead cell with 3 neighbours: cell should live 'birth'
+        # One dead cell with 3 weak neighbours: cell should not get revived 'birth'
 
         world = World(3)
         self.sim.set_world(world)
@@ -96,7 +103,18 @@ class TestSimulator(TestCase):
         self.sim.get_world().set(2,1,1)
         self.sim.get_world().set(2,2,1)
         self.sim.update()
-        self.assertEqual(self.sim.get_world().get(1, 1), 1)
+        self.assertEqual(self.sim.get_world().get(1, 1), 0)
+
+        # One dead cell with 3 vertile neighbours: cell should not get born 'birth'
+
+        world = World(3)
+        self.sim.set_world(world)
+        self.sim.get_world().set(0,1,4)
+        self.sim.get_world().set(1,1,0)
+        self.sim.get_world().set(2,1,4)
+        self.sim.get_world().set(2,2,4)
+        self.sim.update()
+        self.assertEqual(self.sim.get_world().get(1, 1), 6)
 
 
     def test_generate_rules(self):
@@ -112,3 +130,14 @@ class TestSimulator(TestCase):
 
         b,s = self.sim.generate_rules('B3/S234567')
         self.assertEqual([b,s], [[3],[2,3,4,5,6,7]])
+
+    
+    def test_check_vertility(self):
+        """
+        Check if a cell is still vertile
+        """
+        
+        self.assertEqual(self.sim.check_vertility(0),False)
+        self.assertEqual(self.sim.check_vertility(3),True)
+        self.assertEqual(self.sim.check_vertility(100),False)
+

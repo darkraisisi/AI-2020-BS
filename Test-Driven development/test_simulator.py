@@ -98,3 +98,17 @@ class TestSimulator(TestCase):
         self.sim.update()
         self.assertEqual(self.sim.get_world().get(1, 1), 1)
 
+
+    def test_generate_rules(self):
+        """
+        Test if the optional paramater for a new rule set gets parsed propperly
+        """
+
+        b,s = self.sim.generate_rules('B3/S23')
+        self.assertEqual([b,s], [[3],[2,3]])
+        
+        b,s = self.sim.generate_rules('B23/S2')
+        self.assertEqual([b,s], [[2,3],[2]])
+
+        b,s = self.sim.generate_rules('B3/S234567')
+        self.assertEqual([b,s], [[3],[2,3,4,5,6,7]])

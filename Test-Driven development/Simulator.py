@@ -82,24 +82,29 @@ class Simulator:
             for y in range(self.world.height):
                 cell = self.world.get(x,y) # Current cell
                 neighbours = self.world.get_neighbours(x,y) # All neighbours of current cell
-                n = neighbours.count(1) # amount of neighbours
-                if cell == 1:
+                n = 8 - neighbours.count(0) # amount of alive neighbours
+                if cell > 0 :
                     if n not in self.rule_s:
-                        # Cell dies under/over-population
-                        new_world.set(x,y,0)
-                else:
-                    # Cell is dead
-                    if n in self.rule_b:
-                        # Cell is born
-                        new_world.set(x,y,1)
+                        # Cell weakens under/over-population
+                        new_world.set(x,y,cell -1)
+
+                else: # Cell is dead
+                    if n in self.rule_b: # See if the amount is in the birth rule set.
+                        total = 0
+                        for neighbour in neighbours:
+                            if self.check_vertility(neighbour):
+                                total +=1 # Confirm that the amount of vertile neighbours also is in the set.
+                        
+                        if total in self.rule_b:
+                            # Cell is born
+                            new_world.set(x,y,6)
 
         self.set_world(new_world)
 
 
     def check_vertility(self,cell:int) -> bool:
-        print(self.vertility)
-        if (cell > self.vertility['min'] + 2 
-        and cell < self.vertility['max'] - 2):
+        if (cell >= self.vertility['min'] + 2 
+        and cell <= self.vertility['max'] - 2):
             return True
         return False
 

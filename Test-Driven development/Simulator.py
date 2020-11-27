@@ -1,4 +1,5 @@
 from World import *
+import copy
 
 class Simulator:
     """
@@ -26,7 +27,7 @@ class Simulator:
         """
         self.generation += 1
 
-        #TODO: Do something to evolve the generation
+        self.evolve_generation()
 
         return self.world
 
@@ -54,3 +55,24 @@ class Simulator:
 
         """
         self.world = world
+
+
+    def evolve_generation(self) -> None:
+        # We need to make a deep copy so we can evaluate the current state of the game before writing a new status to it.
+        new_world = copy.deepcopy(self.world)
+
+        for x in range(self.world.width):
+            for y in range(self.world.height):
+                cell = self.world.get(x,y) # Current cell
+                neighbours = self.world.get_neighbours(x,y) # All neighbours of current cell
+                n = neighbours.count(1) # amount of neighbours
+                if cell == 1:
+                    if n < 2 or n > 3:
+                        # Cell dies under/over-population
+                        new_world.set(x,y,0)
+                else:
+                    # Cell is dead
+                    if n == 3:
+                        new_world.set(x,y,1)
+
+        self.set_world(new_world)

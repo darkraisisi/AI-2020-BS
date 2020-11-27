@@ -44,3 +44,57 @@ class TestSimulator(TestCase):
         self.sim.set_world(world)
         self.assertIsInstance(self.sim.get_world(), World)
         self.assertIs(self.sim.get_world(), world)
+
+
+    def test_evolve_generation(self):
+        """
+        Test the base rules of game of life.
+        """
+        # One cell with no neighbours: should die 'underpopulation'
+        world = World(3)
+        self.sim.set_world(world)
+        self.sim.get_world().set(1,1,1)
+        self.sim.update()
+        self.assertEqual(self.sim.get_world().get(1, 1), 0)
+
+        # One cell with 1 neighbours: should die
+        world = World(3)
+        self.sim.set_world(world)
+        self.sim.get_world().set(1,1,1)
+        self.sim.get_world().set(0,1,1)
+        self.sim.update()
+        self.assertEqual(self.sim.get_world().get(1, 1), 0)
+
+        # One cell with 2 neighbours: cell should live 'survival'
+
+        world = World(3)
+        self.sim.set_world(world)
+        self.sim.get_world().set(0,1,1)
+        self.sim.get_world().set(1,1,1)
+        self.sim.get_world().set(2,1,1)
+        self.sim.update()
+        self.assertEqual(self.sim.get_world().get(1, 1), 1)
+        
+        # One cell with 4 neighbours: Cell should die 'overpopulation'
+
+        world = World(3)
+        self.sim.set_world(world)
+        self.sim.get_world().set(0,0,1)
+        self.sim.get_world().set(0,1,1)
+        self.sim.get_world().set(1,1,1)
+        self.sim.get_world().set(2,1,1)
+        self.sim.get_world().set(2,2,1)
+        self.sim.update()
+        self.assertEqual(self.sim.get_world().get(1, 1), 0)
+
+        # One dead cell with 3 neighbours: cell should live 'birth'
+
+        world = World(3)
+        self.sim.set_world(world)
+        self.sim.get_world().set(0,1,1)
+        self.sim.get_world().set(1,1,0)
+        self.sim.get_world().set(2,1,1)
+        self.sim.get_world().set(2,2,1)
+        self.sim.update()
+        self.assertEqual(self.sim.get_world().get(1, 1), 1)
+

@@ -16,15 +16,17 @@ class Simulator:
         """
         print(sys.argv)
         if len(sys.argv) == 2:
-            b, s = self.generate_rules(sys.argv[1])
+            b, s, a = self.generate_rules(sys.argv[1])
             self.rule_b = b
             self.rule_s = s
+            self.strength = a
         else:
             self.rule_b = [3]
             self.rule_s = [2, 3]
+            self.strength = 6
 
         self.generation = 0
-        self.vertility = {'min':0, 'max':6}
+        self.vertility = {'min':0, 'max':self.strength}
 
         if world == None:
             self.world = World(20)
@@ -97,7 +99,7 @@ class Simulator:
                         
                         if total in self.rule_b:
                             # Cell is born
-                            new_world.set(x,y,6)
+                            new_world.set(x,y,self.strength)
 
         self.set_world(new_world)
 
@@ -119,7 +121,15 @@ class Simulator:
         rule_str = rule_str.lower().split('b')
         rule_str = rule_str[1].split('/s')
         b = rule_str[0]
-        s = rule_str[1]
-        return  [int(x) for x in b],  [int(y) for y in s]
-        
-        
+        rule_str = rule_str[1].split('/a')
+        s = rule_str[0]
+        a = rule_str[1]
+
+        try:
+            b = [int(x) for x in b]
+            s = [int(y) for y in s]
+            a = int(a)
+            return b, s, a
+        except:
+            return [3], [2,3], 6
+

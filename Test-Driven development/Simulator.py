@@ -24,6 +24,8 @@ class Simulator:
             self.rule_s = [2, 3]
 
         self.generation = 0
+        self.vertility = {'min':0, 'max':6}
+
         if world == None:
             self.world = World(20)
         else:
@@ -92,6 +94,14 @@ class Simulator:
                         new_world.set(x,y,1)
 
         self.set_world(new_world)
+
+
+    def check_vertility(self,cell:int) -> bool:
+        print(self.vertility)
+        if (cell > self.vertility['min'] + 2 
+        and cell < self.vertility['max'] - 2):
+            return True
+        return False
 
     
     def generate_rules(self, rule_str) -> [str, str]:

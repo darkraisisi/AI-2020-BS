@@ -1,5 +1,6 @@
 from World import *
 import copy
+import sys
 
 class Simulator:
     """
@@ -13,6 +14,15 @@ class Simulator:
 
         :param world: (optional) environment used to simulate Game of Life.
         """
+        print(sys.argv)
+        if len(sys.argv) == 2:
+            b, s = self.generate_rules(sys.argv[1])
+            self.rule_b = b
+            self.rule_s = s
+        else:
+            self.rule_b = [3]
+            self.rule_s = [2, 3]
+
         self.generation = 0
         if world == None:
             self.world = World(20)
@@ -58,6 +68,11 @@ class Simulator:
 
 
     def evolve_generation(self) -> None:
+        """
+        Check the current cell against the rules to determine the next state.
+
+        Uses an instace of World.
+        """
         # We need to make a deep copy so we can evaluate the current state of the game before writing a new status to it.
         new_world = copy.deepcopy(self.world)
 
@@ -67,12 +82,29 @@ class Simulator:
                 neighbours = self.world.get_neighbours(x,y) # All neighbours of current cell
                 n = neighbours.count(1) # amount of neighbours
                 if cell == 1:
-                    if n < 2 or n > 3:
+                    if n not in self.rule_s:
                         # Cell dies under/over-population
                         new_world.set(x,y,0)
                 else:
                     # Cell is dead
-                    if n == 3:
+                    if n in self.rule_b:
+                        # Cell is born
                         new_world.set(x,y,1)
 
         self.set_world(new_world)
+
+    
+    def generate_rules(self, rule_str) -> [str, str]:
+        """
+        Parse a string to fit as rules for the sumulation.
+
+        :param rule_str: Rule string to be parsed
+        :return: B, S strings: Births and Survival
+        """
+        rule_str = rule_str.lower().split('b')
+        rule_str = rule_str[1].split('/s')
+        b = rule_str[0]
+        s = rule_str[1]
+        return  [int(x) for x in b],  [int(y) for y in s]
+        
+        

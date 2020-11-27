@@ -116,7 +116,6 @@ class TestSimulator(TestCase):
         self.sim.update()
         self.assertEqual(self.sim.get_world().get(1, 1), 6)
 
-
     def test_generate_rules(self):
         """
         Test if the optional paramater for a new rule set gets parsed propperly
@@ -139,5 +138,6 @@ class TestSimulator(TestCase):
         
         self.assertEqual(self.sim.check_vertility(0),False)
         self.assertEqual(self.sim.check_vertility(3),True)
+        self.assertEqual(self.sim.check_vertility(4),True)
         self.assertEqual(self.sim.check_vertility(100),False)
 
